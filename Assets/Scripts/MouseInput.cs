@@ -6,6 +6,7 @@ public class MouseInput : MonoBehaviour
 {
     [SerializeField]
     public Camera mainCamera;
+    float ray;
     private void Start()
     {
         Cursor.lockState = CursorLockMode.None;
@@ -14,13 +15,16 @@ public class MouseInput : MonoBehaviour
     void Update()
     {
         Ray cameraRay = mainCamera.ScreenPointToRay(Input.mousePosition);
+
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-        float rayLength;
-        if(groundPlane.Raycast(cameraRay, out rayLength))
+        
+        if(groundPlane.Raycast(cameraRay, out ray))
         {
-            Vector3 pointToLook = cameraRay.GetPoint(rayLength);
-            Debug.DrawLine(cameraRay.origin, pointToLook, Color.blue);
-            transform.LookAt(pointToLook);
+            Vector3 target = cameraRay.GetPoint(ray);
+            Vector3 targetPostition = new Vector3( target.x, this.transform.position.y, target.z ) ;
+            this.transform.LookAt( targetPostition ) ;
+
+            //Quaternion.LookRotation(pointToLook);
         }
     }
 

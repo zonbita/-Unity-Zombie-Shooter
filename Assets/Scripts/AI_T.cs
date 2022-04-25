@@ -2,7 +2,8 @@ using UnityEngine.AI;
 using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
-public class AI_T : MonoBehaviour
+[RequireComponent(typeof(Ragdoll))]
+public class AI_T : HPComponent
 {
    public NavMeshAgent agent;
 
@@ -10,7 +11,6 @@ public class AI_T : MonoBehaviour
 
     public LayerMask whatIsGround, whatIsPlayer;
 
-    public float health;
 
     //Patroling
     public Vector3 walkPoint;
@@ -25,6 +25,8 @@ public class AI_T : MonoBehaviour
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
+
+    Ragdoll ragdoll;
 
     private void Awake()
     {
@@ -75,18 +77,18 @@ public class AI_T : MonoBehaviour
 
     private void AttackPlayer()
     {
-        //Make sure enemy doesn't move
+       
         agent.SetDestination(transform.position);
 
         transform.LookAt(player);
 
         if (!alreadyAttacked)
         {
-            ///Attack code here
+            ///Attack 
             Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
             rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
             rb.AddForce(transform.up * 8f, ForceMode.Impulse);
-            ///End of attack code
+            ///End attack 
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -97,15 +99,10 @@ public class AI_T : MonoBehaviour
         alreadyAttacked = false;
     }
 
-    public void TakeDamage(int damage)
+    public override void OnDestroy()
     {
-        health -= damage;
-
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
-    }
-    private void DestroyEnemy()
-    {
-        Destroy(gameObject);
+        ragdoll.ActiveRagdoll();
+        Destroy(gameObject, 5);
     }
 
     private void OnDrawGizmosSelected()

@@ -1,22 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+[RequireComponent(typeof(AudioClip))]
 public class Weapon_Modify : MonoBehaviour
 {
     [Header("Game Object")]
-    public GameObject bullet, pointShot, muzzleFlash;
-    public float shootForce = 300, upwardForce;
-
-    public float timeDelay = 1, reloadTime = 2, TimeShoot = 0.1f;
-    public int AmmoSize = 100, ammoTap = 1;
-    public bool Hold = true;
+    public WeaponStats weaponStats;
+    public GameObject pointShot;
     int ammoLeft, ammoShot;
-    
+
     bool isShoot, isReady, isReload, Allow = true;
-    
+    private CharacterController rb;
+    AudioSource audio;
+
     private void Awake()
     {
-        ammoLeft = AmmoSize;
+        rb = GetComponentInParent<CharacterController>();
+        audio = GetComponent<AudioSource>();
+        ammoLeft = weaponStats.AmmoSize;
         isReady = true;
     }
 
@@ -26,10 +29,10 @@ public class Weapon_Modify : MonoBehaviour
     }
 
     void Press(){
-        // Check Hold Shoot Button 
+        // Check Hold Shoot Button
         if(Allow) isShoot = Input.GetKey(KeyCode.Mouse0);
         else isShoot = Input.GetKeyDown(KeyCode.Mouse0);
-    
+
         // Reload
         if(Input.GetKeyDown(KeyCode.R) && ammoLeft > 0 && !isReload) Reload();
 
@@ -44,26 +47,29 @@ public class Weapon_Modify : MonoBehaviour
     private void Shoot(){
         isReady = false;
 
-        GameObject currentBullet = Instantiate(bullet, pointShot.transform.position, Quaternion.identity);
+        GameObject currentBullet = Instantiate(weaponStats.projectile, pointShot.transform.position + (pointShot.transform.forward * 1.5f), Quaternion.identity);
         currentBullet.transform.forward = pointShot.transform.forward;
 
-        currentBullet.GetComponent<Rigidbody>().AddForce(pointShot.transform.forward.normalized * shootForce, ForceMode.Impulse);
-        currentBullet.GetComponent<Rigidbody>().AddForce(pointShot.transform.up * upwardForce, ForceMode.Impulse);
-        
-        if(muzzleFlash != null)
-            Instantiate(muzzleFlash, pointShot.transform.position, Quaternion.identity);
-
+        currentBullet.GetComponent<Rigidbody>().AddForce(pointShot.transform.forward * weaponStats.shootForce, ForceMode.Impulse);
+        currentBullet.GetComponent<Rigidbody>().AddForce(pointShot.transform.up * weaponStats.upwardForce, ForceMode.Impulse);
+        //Debug.Log(pointShot.transform.forward);
+        if(weaponStats.MuzzleFlash != null)
+            Instantiate(weaponStats.MuzzleFlash, pointShot.transform.position, Quaternion.identity);
+        if(audio){
+            audio.PlayOneShot(weaponStats.ShootSound);
+        }
+            
         ammoLeft--;
         ammoShot++;
 
         if(Allow)
         {
-            Invoke("Reset", TimeShoot);
+            Invoke("Reset", weaponStats.TimeShoot);
             Allow = false;
         }
 
-        if(ammoShot < ammoTap && ammoLeft > 0)
-            Invoke("Shoot", TimeShoot);
+        if(ammoShot < weaponStats.ClipTab && ammoLeft > 0)
+            Invoke("Shoot", weaponStats.TimeShoot);
     }
 
     private void Reset()
@@ -74,11 +80,11 @@ public class Weapon_Modify : MonoBehaviour
 
     private void Reload(){
         isReload = true;
-        Invoke("ReloadFinish", reloadTime);
+        Invoke("ReloadFinish", weaponStats.reloadTime);
     }
 
     private void ReloadFinish(){
-        ammoLeft = AmmoSize;
+        ammoLeft = weaponStats.AmmoSize;
         isReload = false;
     }
 }

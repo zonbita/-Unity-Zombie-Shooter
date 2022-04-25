@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3823f719f6e07064f92a690af1966287, type: 3}
+  m_Name: Rocket
+  m_EditorClassIdentifier: 
+  Name: 
+  Damage: 1
+  Firerate: 0.1
+  AmmoSize: 10
+  ClipTab: 1
+  projectile: {fileID: 0}
+  MuzzleFlash: {fileID: 0}
+  WeaponPrefab: {fileID: 7670779620426368027, guid: 28cac15429ba5ab44be0bd722c6a8e1a, type: 3}
+  WeaponImage: {fileID: 0}
+  ShootSound: {fileID: 0}
+  PickSound: {fileID: 0}
+  shootForce: 300
+  upwardForce: 0
+  timeDelay: 1
+  reloadTime: 2
+  TimeShoot: 1
+  Hold: 1

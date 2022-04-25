@@ -20,21 +20,29 @@ public class PlayerInput : MonoBehaviour
     
     public enum CombatState {Standby, CombatIdle, Attack, Defend}
     public CombatState combatState;
+    Animator animator;
 
+    public float velocity, x, y;
+    
     void Start()
     {
+        velocity = 0.0f;
+        animator = GetComponent<Animator>();
         Controller = GetComponent<CharacterController>();
         StartCoroutine("Movement");
     }
 
     void Update()
     {
-        float speedX = Input.GetAxis("Horizontal") * moveSpeed;
-        float speedZ = Input.GetAxis("Vertical") * moveSpeed;
-        Vector3 movement = new Vector3(speedX, 0, speedZ);
+        x = Input.GetAxis("Horizontal") * moveSpeed;
+        y = Input.GetAxis("Vertical") * moveSpeed;
+        Vector3 movement = new Vector3(x, 0, y);
+        
         Controller.Move(movement * Time.deltaTime);
 
-        if(Controller.velocity.magnitude != 0.0f){
+        velocity = Controller.velocity.magnitude;
+
+        if(velocity != 0.0f){
             if(characterState == CharacterState.Idle)
                 characterState = CharacterState.Walk;
         }
@@ -43,6 +51,9 @@ public class PlayerInput : MonoBehaviour
             if(characterState != CharacterState.Idle)
                 characterState = CharacterState.Idle;
         }
+        //Debug.Log((Controller.transform.position - Input.mousePosition).magnitude);
+
+        animator.SetFloat("Velocity", velocity, 0.1f, Time.deltaTime);
     }
 
 
